@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'us-east-1'
+        AWS_DEFAULT_REGION = 'us-east-2'
     }
 
     stages {
@@ -18,6 +18,7 @@ pipeline {
                     sh '''
                         aws --version
                         aws ecs register-task-definition --cli-input-json file://AWS/task-definition.json
+                        aws update-service --cluster LearnJenkinsApp --service learnJenkinsApp --task-definition LearnJenkinsApp-TaskDefinition-Prod:2
                     '''
                 }
             }
