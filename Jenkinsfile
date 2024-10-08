@@ -6,6 +6,7 @@ pipeline {
         AWS_ECS_CLUSTER='LearnJenkinsApp'
         AWS_ECS_SERVICE_PROD='learnJenkinsApp'
         AWS_ECS_TD_PROD='LearnJenkinsApp-TaskDefinition-Prod'
+        IMAGE_VERSION='1.$LATEST_TD_REVISION'
 
     }
 
@@ -20,7 +21,7 @@ pipeline {
             }
             steps{
                 sh '''
-                   docker build -t mystaticwebapp .
+                   docker build -t mystaticwebapp:$IMAGE_VERSION .
                 '''
             }
         }
