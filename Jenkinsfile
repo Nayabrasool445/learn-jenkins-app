@@ -19,7 +19,7 @@ pipeline {
             }
             steps{
                 sh '''
-                   docker build -t mystaticwebapp:$IMAGE_VERSION .
+                   docker build -t mystaticwebapp .
                 '''
             }
         }
