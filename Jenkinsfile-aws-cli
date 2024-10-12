@@ -2,21 +2,29 @@ pipeline {
     agent any
 
     stages {
-        stage('Building Images') {
+        stage('w/o docker') {
+            steps {
+                sh "echo 'without docker'"
+                sh "ls -la"
+                sh "touch container-no.text"
+
+            }
+        }
+        stage('w docker') {
             agent{
                 docker{
-                    image 'amazon/aws-cli'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps {
-                sh '''
-                   amazon-linux-extras install docker
-                   docker --version
-                   docker build -f AWS/Dockerfile-aws-cli -t my-aws-cli . 
-                '''
+                sh "echo 'with docker'"
+                sh "npm --version"
+                sh "ls -la"
+                sh "touch container-yes.text"                
             }
-        }
+        } 
     }
 }
+
 
