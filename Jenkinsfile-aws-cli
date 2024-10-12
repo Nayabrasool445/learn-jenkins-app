@@ -4,11 +4,13 @@ pipeline {
     stages {
         stage('Building Images') {
             agent{
-                docker{}
+                docker{
+                    reuseNode true
+                }
             }
             steps {
                 sh '''
-                   echo 'docker building aws-cli-image..'
+                   docker --version
                    docker build -f AWS/Dockerfile-aws-cli -t my-aws-cli . 
                 '''
             }
