@@ -3,8 +3,12 @@ pipeline {
 
     stages {
         stage('Building Images') {
+            agent{
+                docker{}
+            }
             steps {
                 sh '''
+                   echo 'docker building aws-cli-image..'
                    docker build -f AWS/Dockerfile-aws-cli -t my-aws-cli . 
                 '''
             }
