@@ -5,6 +5,7 @@ pipeline {
         stage('Building Images') {
             agent{
                 docker{
+                    image 'centos'
                     reuseNode true
                 }
             }
