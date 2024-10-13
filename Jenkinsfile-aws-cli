@@ -7,13 +7,14 @@ pipeline {
                 docker{
                     image 'amazon/aws-cli'
                     reuseNode true
+                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=''"
                 }
             }
             steps {
                 sh '''
-                sudo amazon-linux-extras install docker
-                sudo docker --version
-                sudo docker build -f AWS/Dockerfile-aws-cli -t my-aws-cli . 
+                amazon-linux-extras install docker
+                docker --version
+                docker build -f AWS/Dockerfile-aws-cli -t my-aws-cli . 
                 '''
             }
         }
