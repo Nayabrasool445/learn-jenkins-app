@@ -22,31 +22,42 @@ pipeline {
             steps{
                 withCredentials([usernamePassword(credentialsId: 'my-aws-creds', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
-                        docker build -t $AWS_DOCKER_REGISTRY/$APP_NAME:v1 .
-                        aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_DOCKER_REGISTRY
-                        docker push $AWS_DOCKER_REGISTRY/$APP_NAME:v1
+                        #docker build -t $AWS_DOCKER_REGISTRY/$APP_NAME:v1 .
+                        #aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_DOCKER_REGISTRY
+                        #docker push $AWS_DOCKER_REGISTRY/$APP_NAME:v1
                     '''
                 }
             }
         }
-        stage('Deploy to AWS') {
-            agent {
-                docker {
-                    image 'my-aws-cli'
-                    reuseNode true
-                    args "--entrypoint=''"
-                }
-            }            
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'my-aws-creds', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    sh '''
-                        LATEST_TD_REVISION=$(aws ecs register-task-definition --cli-input-json file://AWS/task-definition.json | jq '.taskDefinition.revision')
-                        echo $LATEST_TD_REVISION
-                        aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE_PROD --task-definition $AWS_ECS_TD_PROD:$LATEST_TD_REVISION
-                        aws ecs wait services-stable --cluster $AWS_ECS_CLUSTER --services $AWS_ECS_SERVICE_PROD
-                    '''
-                }
+        stage('Pushing image to DockerHUB') {
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'my-docker-hub-creds', passwordVariable: 'Password', usernameVariable: 'Username')]) {
+                sh '''
+                    docker login -u $Username -p $Password
+                    docker build -t nayabrasool445/my-ecs-images:staticwebapp .
+                    docker push nayabrasool445/my-ecs-images:staticwebapp
+                '''
+                }                
             }
         }
+        // stage('Deploy to AWS') {
+        //     agent {
+        //         docker {
+        //             image 'my-aws-cli'
+        //             reuseNode true
+        //             args "--entrypoint=''"
+        //         }
+        //     }            
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'my-aws-creds', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+        //             sh '''
+        //                 LATEST_TD_REVISION=$(aws ecs register-task-definition --cli-input-json file://AWS/task-definition.json | jq '.taskDefinition.revision')
+        //                 echo $LATEST_TD_REVISION
+        //                 aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE_PROD --task-definition $AWS_ECS_TD_PROD:$LATEST_TD_REVISION
+        //                 aws ecs wait services-stable --cluster $AWS_ECS_CLUSTER --services $AWS_ECS_SERVICE_PROD
+        //             '''
+        //         }
+        //     }
+        // }
     }
 }
