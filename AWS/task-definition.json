@@ -5,8 +5,11 @@
     "family": "LearnJenkinsApp-TaskDefinition-Prod",
     "containerDefinitions": [
         {
-            "name": "learnjenkinsapp",
-            "image": "127552426662.dkr.ecr.us-east-2.amazonaws.com/mystaticwebapp:v1",
+            "name": "staticwebapp",
+            "image": "nayabrasool445/my-ecs-images:staticwebapp",
+            "repositoryCredentials": {
+                "credentialsParameter": "arn:aws:secretsmanager:us-east-2:127552426662:secret:Credentials/dockerhub-bDC1Hh"
+              },
             "portMappings": [
                 {
                     "name": "ngnix-80-tcp",
